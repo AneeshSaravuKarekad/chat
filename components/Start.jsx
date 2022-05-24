@@ -13,9 +13,13 @@ import Icon from "react-native-vector-icons/AntDesign";
 
 import BackgroundImage from "../assets/BackgroundImage.png";
 
-const Start = () => {
+const Start = (props) => {
   const [activeColor, setActiveColor] = useState("black");
   const [name, setName] = useState("");
+
+  const handleButtonPress = () => {
+    props.navigation.navigate("Chat", { name: name, theme: activeColor });
+  };
 
   return (
     <View style={styles.container}>
@@ -114,6 +118,7 @@ const Start = () => {
                 },
                 styles.button,
               ]}
+              onPress={handleButtonPress}
             >
               <Text style={styles.buttonText}>Start Chat</Text>
             </Pressable>
