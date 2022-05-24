@@ -7,11 +7,12 @@ import {
   onSnapshot,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import useAuth from "../utils/AuthProvider";
 
-LogBox.ignoreLogs(["EventEmitter.removeListener"]);
+LogBox.ignoreLogs(["EventEmitter"]);
 
 export default function Chat(props) {
   const { name, theme } = props.route.params;
