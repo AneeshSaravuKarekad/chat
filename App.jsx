@@ -1,12 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet} from 'react-native';
+
+// Navigation imports
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+// Custom module imports
+import { Chat, Start } from './components';
+
+const RootNavigator = () => {
+  const Stack = createStackNavigator();
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='Start'>
+        <Stack.Screen name="Start" component={Start} />
+        <Stack.Screen name="Chat" component={Chat} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Hello World!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <RootNavigator />
   );
 }
 
