@@ -7,16 +7,23 @@ import {
   TextInput,
   Pressable,
   KeyboardAvoidingView,
+  TouchableOpacity,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
 
 import BackgroundImage from "../assets/BackgroundImage.png";
 
-const Start = (props) => {
-  const [activeColor, setActiveColor] = useState("black");
-  const [name, setName] = useState("");
+const COLORS = {
+  black: "#090C08",
+  gray: "#474056",
+  blueishGray: "#8A95A5",
+  lightGreen: "#B9C6AE",
+};
 
+const Start = (props) => {
+  const [activeColor, setActiveColor] = useState(COLORS.black);
+  const [name, setName] = useState("");
   const handleButtonPress = () => {
     props.navigation.navigate("Chat", { name: name, theme: activeColor });
   };
@@ -60,51 +67,51 @@ const Start = (props) => {
               <View style={styles.colorContainer}>
                 <View
                   style={
-                    activeColor === "black"
+                    activeColor === COLORS.black
                       ? [styles.circleContainer, { borderColor: "#090C08" }]
                       : [styles.circleContainer, { borderColor: "white" }]
                   }
                 >
                   <Pressable
-                    onPress={() => setActiveColor("black")}
+                    onPress={() => setActiveColor(COLORS.black)}
                     style={[styles.circle, { backgroundColor: "#090C08" }]}
                   />
                 </View>
                 <View
                   style={
-                    activeColor === "gray"
+                    activeColor === COLORS.gray
                       ? [styles.circleContainer, { borderColor: "#474056" }]
                       : [styles.circleContainer, { borderColor: "white" }]
                   }
                 >
                   <Pressable
-                    onPress={() => setActiveColor("gray")}
+                    onPress={() => setActiveColor(COLORS.gray)}
                     style={[styles.circle, { backgroundColor: "#474056" }]}
                   />
                 </View>
 
                 <View
                   style={
-                    activeColor === "blueishGray"
+                    activeColor === COLORS.blueishGray
                       ? [styles.circleContainer, { borderColor: "#8A95A5" }]
                       : [styles.circleContainer, { borderColor: "white" }]
                   }
                 >
                   <Pressable
-                    onPress={() => setActiveColor("blueishGray")}
+                    onPress={() => setActiveColor(COLORS.blueishGray)}
                     style={[styles.circle, { backgroundColor: "#8A95A5" }]}
                   />
                 </View>
 
                 <View
                   style={
-                    activeColor === "lightGreen"
+                    activeColor === COLORS.lightGreen
                       ? [styles.circleContainer, { borderColor: "#B9C6AE" }]
                       : [styles.circleContainer, { borderColor: "white" }]
                   }
                 >
                   <Pressable
-                    onPress={() => setActiveColor("lightGreen")}
+                    onPress={() => setActiveColor(COLORS.lightGreen)}
                     style={[styles.circle, { backgroundColor: "#B9C6AE" }]}
                   />
                 </View>
@@ -112,9 +119,11 @@ const Start = (props) => {
             </View>
 
             <Pressable
+              accessible={true}
+              accessibilityLabel="Navigate to Chat Screen"
               style={({ pressed }) => [
                 {
-                  backgroundColor: pressed ? "#585563" : "#757083",
+                  backgroundColor: pressed ? "#585563" : "black",
                 },
                 styles.button,
               ]}
