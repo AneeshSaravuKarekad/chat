@@ -9,6 +9,7 @@ import {
   query,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
+import useAuth from "../utils/AuthProvider";
 
 LogBox.ignoreLogs(["EventEmitter.removeListener"]);
 
@@ -17,6 +18,7 @@ export default function Chat(props) {
   const [messages, setMessages] = useState([]);
   const messagesCollection = collection(db, "messages");
 
+  const { uid } = useAuth();
   useEffect(() => {
     // Set the name of the user as title of the screen
     props.navigation.setOptions({ title: name });
@@ -36,6 +38,7 @@ export default function Chat(props) {
   const addMessage = (message) => {
     const { _id, createdAt, text, user } = message;
     addDoc(messagesCollection, {
+      uid,
       _id,
       createdAt,
       text,
@@ -55,7 +58,7 @@ export default function Chat(props) {
     setMessages(
       querySnapshot.docs.map((doc) => ({
         // get the QueryDocumentSnapshot's data
-
+        uid,
         _id: doc.data()._id,
         text: doc.data().text,
         createdAt: doc.data().createdAt.toDate(),
@@ -87,7 +90,7 @@ export default function Chat(props) {
         forceGetKeyboardHeight={true}
         onSend={(newMessage) => handleSend(newMessage)}
         user={{
-          _id: 1,
+          _id: uid,
           name: name,
           avatar: "https://placeimg.com/140/140/any",
         }}
