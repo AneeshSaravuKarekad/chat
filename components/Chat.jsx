@@ -115,7 +115,7 @@ function KeyboardShift(props) {
 export default function Chat(props) {
   const { name, theme } = props.route.params;
   const [messages, setMessages] = useState([]);
-  const [isOnline, setIsOnline] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   const messagesCollection = collection(db, "messages");
 
   const { uid } = useAuth();
@@ -150,7 +150,6 @@ export default function Chat(props) {
         messagesCollection,
         orderBy("createdAt", "desc")
       );
-
       unsubscribe = onSnapshot(messagesQuery, updateCollection);
       addMessagesToStorage();
 
@@ -169,7 +168,6 @@ export default function Chat(props) {
    */
   const getMessagesFromStorage = async () => {
     try {
-      const storedMessages = await AsyncStorage.getItem("messages");
       setMessages(JSON.parse(storedMessages));
     } catch (error) {
       console.log(error.message);
@@ -216,6 +214,7 @@ export default function Chat(props) {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages[0])
     );
+
     addMessage(messages[0]);
     addMessagesToStorage(messages);
   };
@@ -233,9 +232,10 @@ export default function Chat(props) {
         image: doc.data().image || null,
         uid,
         _id: doc.data()._id,
-        text: doc.data().text,
+        text: doc.data().text || null,
         createdAt: doc.data().createdAt.toDate(),
         user: doc.data().user,
+        location: doc.data().location || null,
       }))
     );
   };
