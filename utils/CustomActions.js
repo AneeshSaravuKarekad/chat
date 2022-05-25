@@ -125,6 +125,12 @@ export default class CustomActions extends React.Component {
     return file;
   };
 
+  /**
+   * A method to upload the image to Firebase and fetch the image Url.
+   * @method uploadImageFetch
+   * @param {Object} file contains the blob and the name of the image
+   * @returns {string} downloadUrl of the image
+   */
   uploadImageFetch = async (file) => {
     // Creating a reference to the images folder in Firebase Cloud Storage
     const imageRef = ref(storage, "images/" + file.name);
