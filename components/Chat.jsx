@@ -39,7 +39,7 @@ import CustomActions from "../utils/CustomActions";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useKeyboard } from "@react-native-community/hooks";
 
-LogBox.ignoreLogs(["EventEmitter"]);
+LogBox.ignoreLogs(["EventEmitter", "Animated.event"]);
 
 // FIXME: This is a temporary fix for the issue with the keyboard not showing up
 function KeyboardShift(props) {
