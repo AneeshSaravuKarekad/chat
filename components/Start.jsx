@@ -7,11 +7,10 @@ import {
   TextInput,
   Pressable,
   KeyboardAvoidingView,
-  TouchableOpacity,
 } from "react-native";
 
+// Import assets
 import Icon from "react-native-vector-icons/AntDesign";
-
 import BackgroundImage from "../assets/BackgroundImage.png";
 
 const COLORS = {
