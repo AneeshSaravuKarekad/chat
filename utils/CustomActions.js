@@ -3,7 +3,9 @@ import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import PropTypes from "prop-types";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
 
+// Import local modules
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../config/firebase";
 
@@ -29,8 +31,7 @@ export default class CustomActions extends React.Component {
           case 1:
             return this.clickPicture();
           case 2:
-            console.log("send location");
-            return this.getLocation();
+            return this.geoLocation();
           default:
         }
       }
@@ -86,6 +87,34 @@ export default class CustomActions extends React.Component {
           const blob = await this.createBlob(result.uri);
           const imageUrl = await this.uploadImageFetch(blob);
           this.props.onSend({ image: imageUrl });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  /**
+   * A method to ask the user for permission to access the location and upload the location the user wants to upload.
+   * @method geoLocation
+   * @returns {Promise<void>} A Promise that resolves when the user has selected thier location.
+   */
+  geoLocation = async () => {
+    const { status } = await Permissions.askAsync(
+      Permissions.LOCATION_FOREGROUND
+    );
+
+    try {
+      if (status === "granted") {
+        let result = await Location.getCurrentPositionAsync({});
+
+        if (result) {
+          this.props.onSend({
+            location: {
+              latitude: result.coords.latitude,
+              longitude: result.coords.longitude,
+            },
+          });
         }
       }
     } catch (error) {
