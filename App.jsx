@@ -1,21 +1,18 @@
-import { StyleSheet, View, LogBox, ActivityIndicator } from "react-native";
+import { useState, useEffect } from "react";
+import { View, LogBox, ActivityIndicator } from "react-native";
 
 // Navigation imports
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import { onAuthStateChanged } from "firebase/auth";
 // Custom module imports
 import { Chat, Start } from "./components";
 import useAuth, { AuthProvider } from "./utils/AuthProvider";
-import { auth } from "./config/firebase";
-import { useState, useEffect } from "react";
 
 LogBox.ignoreLogs(["AsyncStorage"]);
 
 const RootNavigator = () => {
   const Stack = createStackNavigator();
-  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const { uid, error } = useAuth();
