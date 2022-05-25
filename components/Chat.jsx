@@ -11,8 +11,6 @@ import {
   TextInput,
   ImageBackground,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import NetInfo from "@react-native-community/netinfo";
 import {
   Bubble,
   GiftedChat,
@@ -20,6 +18,9 @@ import {
   Send,
 } from "react-native-gifted-chat";
 import { IconButton } from "react-native-paper";
+import MapView from "react-native-maps";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 
 // Firestore
 import {
@@ -39,7 +40,7 @@ import CustomActions from "../utils/CustomActions";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useKeyboard } from "@react-native-community/hooks";
 
-LogBox.ignoreLogs(["EventEmitter", "Animated.event"]);
+LogBox.ignoreLogs(["EventEmitter", "Animated.event", "expo-permissions"]);
 
 // FIXME: This is a temporary fix for the issue with the keyboard not showing up
 function KeyboardShift(props) {
@@ -194,8 +195,7 @@ export default function Chat(props) {
    * @param {object} message
    */
   const addMessage = async (message) => {
-    const { _id, createdAt, text, user, image } = message;
-
+    const { _id, createdAt, text, user, image, location } = message;
     await addDoc(messagesCollection, {
       uid,
       _id,
@@ -203,6 +203,7 @@ export default function Chat(props) {
       text: text || null,
       user,
       image: image || null,
+      location: location || null,
     });
   };
 
@@ -239,12 +240,22 @@ export default function Chat(props) {
     );
   };
 
+  /**
+   * A method to render GiftedChat Bubble component
+   * @param {*} props
+   * @returns {Bubble} Gifted Chat custom bubble
+   */
   const renderBubble = (props) => {
     return (
       <Bubble {...props} wrapperStyle={{ right: { backgroundColor: theme } }} />
     );
   };
 
+  /**
+   * A method to render GiftedChat Send component
+   * @param {*} props
+   * @returns {Send} Gifted Chat custom Send
+   */
   function renderSend(props) {
     return (
       <Send {...props}>
@@ -260,6 +271,11 @@ export default function Chat(props) {
     );
   }
 
+  /**
+   * A method to render GiftedChat InputToolbar component
+   * @param {*} props
+   * @returns {InputToolbar} Gifted Chat custom InputToolbar
+   */
   const renderInputToolBar = (props) => {
     if (isOnline) {
       return <InputToolbar {...props} containerStyle={styles.inputToolbar} />;
@@ -268,8 +284,36 @@ export default function Chat(props) {
     }
   };
 
+  /**
+   * A method to render GiftedChat custom actions (pick, click an image)
+   * @param {*} props
+   * @returns {CustomActions} Gifted Chat CustomActions
+   */
   const renderActions = (props) => {
     return <CustomActions {...props} propsnavigation={props.navigation} />;
+  };
+
+  /**
+   * A method to render react-native-map custom MapView component
+   * @param {*} props
+   * @returns {MapView} React Native Map custom MapView
+   */
+  const renderMapActions = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={styles.map}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
   };
 
   return (
@@ -298,6 +342,7 @@ export default function Chat(props) {
             alwaysShowSend
             scrollToBottom
             isAnimated
+            renderCustomView={renderMapActions}
             renderActions={renderActions}
             user={{
               _id: uid,
@@ -336,5 +381,11 @@ const styles = StyleSheet.create({
   },
   button: {
     marginLeft: "auto",
+  },
+  map: {
+    width: 150,
+    height: 100,
+    borderRadius: 13,
+    margin: 3,
   },
 });
