@@ -15,6 +15,7 @@ export default class CustomActions extends React.Component {
       " Send Location",
       "Cancel",
     ];
+
     const cancelButtonIndex = options.length - 1;
     this.context.actionSheet().showActionSheetWithOptions(
       {
@@ -24,11 +25,9 @@ export default class CustomActions extends React.Component {
       async (buttonIndex) => {
         switch (buttonIndex) {
           case 0:
-            console.log("pick an image");
             return this.pickImage();
           case 1:
-            console.log("take picture");
-            return this.takePhoto();
+            return this.clickPicture();
           case 2:
             console.log("send location");
             return this.getLocation();
@@ -38,6 +37,11 @@ export default class CustomActions extends React.Component {
     );
   };
 
+  /**
+   * A method to ask the user for permission to access the camera and select the image the user wants to upload.
+   * @method pickImage
+   * @returns {Promise<void>} A Promise that resolves when the user has selected an image.
+   */
   pickImage = async () => {
     // Ask user for permission to access photo library
     const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
@@ -46,16 +50,14 @@ export default class CustomActions extends React.Component {
       // If permission is granted, let user choose a picture
       if (status === "granted") {
         let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: "Images",
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
         }).catch((error) => console.log(error));
 
         // If the user doesn't cancel process, upload image to Firebase and the fetch the image Url
         if (!result.cancelled) {
           const blob = await this.createBlob(result.uri);
           const imageUrl = await this.uploadImageFetch(blob);
-          console.log("I'm adding this URL to the message!: " + imageUrl);
           this.props.onSend({ image: imageUrl });
-          console.log("I'm already sending this message! ");
         }
       }
     } catch (err) {
@@ -63,6 +65,40 @@ export default class CustomActions extends React.Component {
     }
   };
 
+  /**
+   * A method to click the camera and upload the image.
+   * @method clickPicture
+   * @returns {Promise<void>} A Promise that resolves when the user clicks and sends the photo
+   */
+  clickPicture = async () => {
+    const { status } = await Permissions.askAsync(
+      Permissions.CAMERA,
+      Permissions.MEDIA_LIBRARY
+    );
+
+    try {
+      if (status === "granted") {
+        let result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        });
+
+        if (!result.cancelled) {
+          const blob = await this.createBlob(result.uri);
+          const imageUrl = await this.uploadImageFetch(blob);
+          this.props.onSend({ image: imageUrl });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  /**
+   * A method to create a blob from the image the user has selected.
+   * @method createBlob
+   * @param {string} uri
+   * @returns {Object} An object containing the image blob and the image name
+   */
   createBlob = async (uri) => {
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
